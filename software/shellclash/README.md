@@ -27,3 +27,8 @@
 --------------------------
 
 参考：[在Linux系统安装及使用ShellClash的教程](https://juewuy.github.io/zai-linux-xi-tong-an-zhuang-ji-shi-yong-shellclash-de-jiao-cheng/)
+
+添加了文件：[ShellClash_20230820_v1.8.0.tar.gz](ShellClash_20230820_v1.8.0.tar.gz)，可以不在线下载，
+使用adb push ShellClash_20230820_v1.8.0.tar.gz /tmp/
+然后mv /tmp/ShellClash_20230820_v1.8.0.tar.gz /tmp/ShellClash.tar.gz
+接着后续安装命令即可
