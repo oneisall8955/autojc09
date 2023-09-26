@@ -1710,10 +1710,7 @@ var showbatajax_id;
 function showBatInfo() {
     batinfoajax();
     showbatajax_id = setInterval('batinfoajax()',1000*5);
-
-    if (mobileProvider != "NO SIM" /*&& mobileProvider != "NO Service"*/) {
-        document.getElementById("mBatDetail").style.display = "flex";
-    }
+    document.getElementById("mBatDetail").style.display = "flex";
 }
 function hideBatInfo() {
     clearInterval(showbatajax_id);

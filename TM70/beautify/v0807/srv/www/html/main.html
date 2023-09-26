@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MIFI</title>
+    <script type="text/javascript" src="../js/config.js"></script>
+
+    <link href="../css/main.css" type="text/css" rel="stylesheet">
+    <link href="../css/styles.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/layui.css" tppabs="http://res.layui.com/layui/dist/css/layui.css"  media="all">
+    <link rel="stylesheet" href="../css/main.css"  media="all">
+    <link href="../css/setting.css" type="text/css" rel="stylesheet">
+    <link href="../css/internet.css" type="text/css" rel="stylesheet">
+    <link href="../css/wifi.css" type="text/css" rel="stylesheet">
+
+    <script type="text/javascript" src="../js/menu.js"></script>
+    <script type="text/javascript" src="../js/settings.js"></script>
+    <script type="text/javascript" src="../js/ajax_calls.js"></script>
+    <script type="text/javascript" src="../js/jquery.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../js/i18n.js"></script>
+    <script type="text/javascript" src="../js/md5.js"></script>
+    <script type="text/javascript" src="../js/layui.js"></script>
+    <script type="text/javascript" src="../js/network.js"></script>
+    <script type="text/javascript" src="../js/wifi.js"></script>
+    <script type="text/javascript" src="../js/lan.js"></script>
+    <script type="text/javascript" charset="utf-8" src="../js/includeLang.js"></script>
+
+    <style type="text/css">
+        /*清除password密码输入框的明文图标，此伪类仅在ie中有效*/
+        input::-ms-reveal {
+            display: none;
+        }
+        /*清除text文本输入框的清除图标，此伪类仅在ie中有效*/
+        input::-ms-clear{
+            display: none;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var LOCAL_HOST_IP = "/";
+        var _xmlName = "";
+        var REMOTE_HOST_IP = "/";
+
+        document.title = 'TM70 MIFI'
+
+        // http://192.168.1.1:8080
+        var R106_8080_API_PREFIX=window.location.protocol+"//"+window.location.host+":8080"
+        console.log("r106 8080 service:",R106_8080_API_PREFIX)
+    </script>
+</head>
+<body onload="loadMainHtml()">
+    <div id="app">
+        <div id="header">
+            <div style="position: relative;margin: auto">
+                <div class="title_bar" style="display: flex; border:0; margin: auto;position: relative">
+                    <div style="margin-left: 46px; display: flex;align-items: center;">
+                        <img id="titleLogo" style="margin-right: 10px; height: 48px;width:121.4px;display: none;">
+                        <div class="title_text" id="mTitle" style="font-family: SourceHanSansCN-Bold;font-size: 26px;color: #FFFFFF;letter-spacing: 0;ext-align: right;font-weight: 700;display: none;">Mobile router</div>
+                    </div>
+                    <div
+                        style="margin-top: 20px; margin-bottom: 20px;margin-right:35px; position: absolute;right: 0; display: flex">
+                        <div class="title_text2" style="margin-left: 0px; margin-right: 10px; padding-top: 12px;" id="temp"></div>
+                        <div class="title_text2" style="margin-left: 0px; margin-right: 0px; padding-top: 12px;" id="mBattery"></div>
+                        <div style="margin-left: 30px; margin-right: 30px; padding-top: 10px; display: none" id="mBatteryUnit" onclick="showBatInfo()">
+                            <img src="../images/main/nav_top_icon_battery_normal.png" style="position: absolute;"
+                                id="mBatteryIcon">
+                            <img src="../images/main/nav_top_icon_charging_normal.png" style="position: absolute;"
+                                id="mBatteryCharge">
+                            <!-- <div class="title_text2" style="justify-content: center;display: flex;" id="mBattery">0%</div> -->
+                        </div>
+                        <div style="margin-left: 30px; margin-right: 30px; padding-top: 8px;" onclick="showDetailInfo()">
+                            <img src="../images/main/nav_top_network_information2.png" style="position: absolute;"
+                                id="mNetworkIcon">
+                        </div>
+                        <div id="setting_wizard" style="margin-left: 30px; text-align: center" onclick="toWizard()">
+                            <img src="../images/main/nav_top_icon_setting_normal.png">
+                            <div class="title_text2" id="mWizard">Wizard</div>
+                        </div>
+                        <div id="exit_login" style="margin-left: 30px; text-align: center" onclick="logOut()">
+                            <img src="../images/main/nav_top_icon_exit_normal.png">
+                            <div class="title_text2" id="mLogOut">Log out</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="menu" style="margin-top: 20px">
+            <div style="position: relative">
+                <div style="margin: auto;width:950px; height:60px; display: flex; position: relative">
+                    <div onclick="checkMainHtml('home')" id="menu_home" class="menu_select" style="display: flex">
+                        <img id="img_home" src="../images/main/nav_home_select.png" class="menu_img">
+                        <div id="text_home" class="menu_text_select">Home</div>
+                    </div>
+                    <div onclick="checkMainHtml('internet')" id="menu_internet" class="menu_normal" style="margin-left: 10px;display: none">
+                        <img id="img_internet" src="../images/main/nav_internet_normal.png" class="menu_img">
+                        <div id="text_internet" class="menu_text_normal">Internet</div>
+                    </div>
+                    <div onclick="checkMainHtml('wifi')" id="menu_wifi" class="menu_normal" style="margin-left: 10px;display: flex">
+                        <img id="img_wifi" src="../images/main/nav_wifi_normal.png" class="menu_img">
+                        <div id="text_wifi" class="menu_text_normal">My Wi-Fi</div>
+                    </div>
+                    <div onclick="checkMainHtml('network')" id="menu_network" class="menu_normal" style="margin-left: 10px;display: flex">
+                        <img id="img_network" src="../images/main/nav_mobile_network_normal.png" class="menu_img">
+                        <div id="text_network" class="menu_text_normal">Network</div>
+                    </div>
+                    <div onclick="checkMainHtml('lan')" id="menu_lan" class="menu_normal" style="margin-left: 10px;display: none">
+                        <img id="img_lan" src="../images/main/nav_internet_normal.png" class="menu_img">
+                        <div id="text_lan" class="menu_text_normal">Lan</div>
+                    </div>
+                    <div onclick="checkMainHtml('clientList')" id="menu_terminal" class="menu_normal" style="margin-left: 10px;display: flex">
+                        <img id="img_terminal" src="../images/main/nav_terminal_normal.png" class="menu_img">
+                        <div id="text_terminal" class="menu_text_normal">Clients</div>
+                    </div>
+                    <div onclick="checkMainHtml('settings')" id="menu_setting" class="menu_normal" style="margin-left: 10px;display: flex">
+                        <img id="img_settings" src="../images/main/nav_settings_normal.png" class="menu_img">
+                        <div id="text_settings" class="menu_text_normal">More</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="Content" style="margin-top: 20px;">
+
+        </div>
+
+        <br>
+        <div id="footer" style="height: 150px">
+
+        </div>
+    </div>
+    <div class="full_screen" id="mInternetDetail" style="display: none;">
+        <div class="full_screen_opacity"></div>
+        <div class="full_screen_plane">
+            <span class="full_screen_title" style="margin-top: 20px; margin-left: 30px;"><script>I18N("h", "pInformation")</script></span>
+            <span class="full_screen_subtitle" style="margin-top: 60px; margin-left: 30px;"><script>I18N("h", "pOperator")</script></span>
+            <span class="full_screen_option" id="detail_operator" style="margin-top: 80px; margin-left: 30px;"><script>I18N("h", "pUnknown")</script></span>
+            <span class="full_screen_subtitle" style="margin-top: 60px; margin-left: 291px;"><script>I18N("h", "pNetworkType")</script></span>
+            <span class="full_screen_option" id="detail_network" style="margin-top: 80px; margin-left: 291px;"><script>I18N("h", "pUnknown")</script></span>
+
+            <span class="full_screen_subtitle" style="margin-top: 120px; margin-left: 30px;"><script>I18N("h", "pBAND")</script></span>
+            <span class="full_screen_option" id="detail_band" style="margin-top: 140px; margin-left: 30px;"><script>I18N("h", "pUnknown")</script></span>
+            <span class="full_screen_subtitle" style="margin-top: 120px; margin-left: 291px;"><script>I18N("h", "pEarfcn")</script></span>
+            <span class="full_screen_option" id="detail_earfcn" style="margin-top: 140px; margin-left: 291px;"><script>I18N("h", "pUnknown")</script></span>
+
+            <span class="full_screen_subtitle" style="margin-top: 180px; margin-left: 30px;"><script>I18N("h", "pRSRP")</script></span>
+            <span class="full_screen_option" id="detail_rsrp" style="margin-top: 200px; margin-left: 30px;"><script>I18N("h", "pUnknown")</script></span>
+            <span class="full_screen_subtitle" style="margin-top: 180px; margin-left: 291px;"><script>I18N("h", "pRSSI")</script></span>
+            <span class="full_screen_option" id="detail_rssi" style="margin-top: 200px; margin-left: 291px;"><script>I18N("h", "pUnknown")</script></span>
+
+            <span class="full_screen_subtitle" style="margin-top: 240px; margin-left: 30px;"><script>I18N("h", "pRSRQ")</script></span>
+            <span class="full_screen_option" id="detail_rsrq" style="margin-top: 260px; margin-left: 30px;"><script>I18N("h", "pUnknown")</script></span>
+            <span class="full_screen_subtitle" style="margin-top: 240px; margin-left: 291px;"><script>I18N("h", "pCellID")</script></span>
+            <span class="full_screen_option" id="detail_cellid" style="margin-top: 260px; margin-left: 291px;"><script>I18N("h", "pUnknown")</script></span>
+
+            <span class="full_screen_subtitle" style="margin-top: 300px; margin-left: 30px;"><script>I18N("h", "pPCI")</script></span>
+            <span class="full_screen_option" id="detail_pci" style="margin-top: 320px; margin-left: 30px;"><script>I18N("h", "pUnknown")</script></span>
+            <span class="full_screen_subtitle" style="margin-top: 300px; margin-left: 291px;"><script>I18N("h", "pMCC")</script></span>
+            <span class="full_screen_option" id="detail_mcc" style="margin-top: 320px; margin-left: 291px;"><script>I18N("h", "pUnknown")</script></span>
+
+            <span class="full_screen_subtitle" style="margin-top: 360px; margin-left: 30px;"><script>I18N("h", "pMNC")</script></span>
+            <span class="full_screen_option" id="detail_mnc" style="margin-top: 380px; margin-left: 30px;"><script>I18N("h", "pUnknown")</script></span>
+            <span class="full_screen_subtitle" style="margin-top: 360px; margin-left: 291px;"><script>I18N("h", "pICCID")</script></span>
+            <span class="full_screen_option" id="detail_iccid" style="margin-top: 380px; margin-left: 291px;"><script>I18N("h", "pUnknown")</script></span>
+
+            <span class="full_screen_subtitle" style="margin-top: 420px; margin-left: 30px;"><script>I18N("h", "pIMEI")</script></span>
+            <span class="full_screen_option" id="detail_imei" style="margin-top: 440px; margin-left: 30px;"><script>I18N("h", "pUnknown")</script></span>
+        </div>
+        <img class="full_screen_plane_close" id="hideDetailInfo_id" src="../images/main/icon_close.png" onclick="hideDetailInfo()">
+    </div>
+    <div class="full_screen" id="mBatDetail" style="display: none;">
+        <div class="full_screen_opacity"></div>
+        <div class="full_screen_plane">
+            <span class="full_screen_title" style="margin-top: 20px; margin-left: 30px;">电池信息</span>
+            <span class="full_screen_subtitle" style="margin-top: 60px; margin-left: 30px;">充电状态</span>
+            <span class="full_screen_option" id="bat_status" style="margin-top: 80px; margin-left: 30px;"> </span>
+            <span class="full_screen_subtitle" style="margin-top: 60px; margin-left: 291px;">电池状态</span>
+            <span class="full_screen_option" id="bat_health" style="margin-top: 80px; margin-left: 291px;"> </span>
+
+            <span class="full_screen_subtitle" style="margin-top: 120px; margin-left: 30px;">当前电压</span>
+            <span class="full_screen_option" id="bat_voltage_now" style="margin-top: 140px; margin-left: 30px;"> </span>
+            <span class="full_screen_subtitle" style="margin-top: 120px; margin-left: 291px;">平均电压</span>
+            <span class="full_screen_option" id="bat_voltage_avg" style="margin-top: 140px; margin-left: 291px;"> </span>
+
+            <span class="full_screen_subtitle" style="margin-top: 180px; margin-left: 30px;">电量百分比</span>
+            <span class="full_screen_option" id="bat_capacity" style="margin-top: 200px; margin-left: 30px;"> </span>
+            <span class="full_screen_subtitle" style="margin-top: 180px; margin-left: 291px;">总容量</span>
+            <span class="full_screen_option" id="bat_full" style="margin-top: 200px; margin-left: 291px;"> </span>
+
+            <span class="full_screen_subtitle" style="margin-top: 240px; margin-left: 30px;">当前充电电流</span>
+            <span class="full_screen_option" id="bat_charge_current" style="margin-top: 260px; margin-left: 30px;"> </span>
+            <span class="full_screen_subtitle" style="margin-top: 240px; margin-left: 291px;">充电电流限制</span>
+            <span class="full_screen_option" id="bat_current_limit" style="margin-top: 260px; margin-left: 291px;"> </span>
+
+            <span class="full_screen_subtitle" style="margin-top: 300px; margin-left: 30px;">当前电流</span>
+            <span class="full_screen_option" id="bat_current_now" style="margin-top: 320px; margin-left: 30px;"> </span>
+            <span class="full_screen_subtitle" style="margin-top: 300px; margin-left: 291px;">平均电流</span>
+            <span class="full_screen_option" id="bat_current_avg" style="margin-top: 320px; margin-left: 291px;"> </span>
+
+            <span class="full_screen_subtitle" style="margin-top: 360px; margin-left: 30px;">当前容量</span>
+            <span class="full_screen_option" id="bat_charge_count" style="margin-top: 380px; margin-left: 30px;"> </span>
+            <span class="full_screen_subtitle" style="margin-top: 360px; margin-left: 291px;">电源状态</span>
+            <span class="full_screen_option" id="bat_online" style="margin-top: 380px; margin-left: 291px;"> </span>
+
+            <span class="full_screen_subtitle" style="margin-top: 420px; margin-left: 30px;">电池温度</span>
+            <span class="full_screen_option" id="bat_temp" style="margin-top: 440px; margin-left: 30px;"> </span>
+            <div id="chargediv" style="display: none;">
+                <span class="full_screen_subtitle" style="margin-top: 420px; margin-left: 291px;">充电控制</span>
+                <label class="switch" style="margin-top: 420px; margin-left: 375px;">
+                    <input type="checkbox" id="disable_charge" onclick="disable_charge()">
+                    <div class="slider round"></div>
+                </label></div>
+        </div>
+        <img class="full_screen_plane_close" id="hideBatInfo_id" src="../images/main/icon_close.png" onclick="hideBatInfo()">
+    </div>
+    <div class="full_screen" id="mNotice" style="display: none;">
+        <div class="full_screen_opacity"></div>
+        <div class="full_screen_plane_notify">
+            <div class="full_screen_title" style="margin-top: 4px; margin-left: 16px;" id="full_screen_notice_title"></div>
+            <div class="full_screen_subtitle" style="text-align: center;width:250px; line-height: 150px; vertical-align: middle;" id="full_screen_notice_msg"></div>
+        </div>
+        <img class="full_screen_plane_close" id="notify_close" src="../images/main/icon_close.png" onclick="hideNotice()" style="display: none;">
+    </div>
+</body>
+</html>

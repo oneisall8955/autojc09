@@ -55,10 +55,10 @@ function checkMainHtml(htmlPath) {
             document.getElementById("img_wifi").src = "../images/main/nav_wifi_select.png";
             break;
         case "network":
-            /*if (mobileProvider === "NO SIM") {
-                alert(I18N("j", "noSIM"));
-                return;
-            }*/
+            // if (mobileProvider === "NO SIM") {
+            //     alert(I18N("j", "noSIM"));
+            //     return;
+            // }
             /*if (mobileProvider === "NO Service") {
                 alert(I18N("j", "noService"));
                 return;
@@ -138,7 +138,7 @@ function checkHtml(htmlName) {
     document.getElementById("text_terminal").innerHTML = I18N("j", "mClients");
     document.getElementById("text_settings").innerHTML = I18N("j", "mMore");
 
-    stone_getXMLCfg('battery_level', refreshBattery);
+    mm_getXMLCfg('battery_level', refreshBattery);
 
     //调用接口获取数据
     switch (htmlName) {
@@ -172,7 +172,7 @@ function checkHtml(htmlName) {
                     logOut();
                 }
             });
-            // homeIntervalId = setInterval('setTimeout("stone_getXMLCfg(\'dashboard\', setDashboardValue)",0)',1000*10);
+            // homeIntervalId = setInterval('setTimeout("mm_getXMLCfg(\'dashboard\', setDashboardValue)",0)',1000*10);
             setHomeText();
             break;
         case "internet":
@@ -251,7 +251,7 @@ function checkHtml(htmlName) {
             // clearInterval(clientIntervalId);
             // clearInterval(networkIntervalId);
             // clearTimeout(resetNetworkStatusTimeoutId);
-            stone_getXMLCfg("sysinfo", setRouterValue);
+            mm_getXMLCfg("sysinfo", setRouterValue);
             setSettingsText();
             break;
         case "network":
@@ -259,13 +259,13 @@ function checkHtml(htmlName) {
             // clearInterval(clientIntervalId);
             // clearInterval(networkIntervalId);
             // clearTimeout(resetNetworkStatusTimeoutId);
-            // networkIntervalId = setInterval('setTimeout("stone_getXMLCfg(\'getMobileCfg\', setNetworkValue)",0)',1000*5);
+            // networkIntervalId = setInterval('setTimeout("mm_getXMLCfg(\'getMobileCfg\', setNetworkValue)",0)',1000*5);
             // resetNetworkStatusTimeoutId = setTimeout("resetNetworkStatus()",1000*21);
-            stone_getXMLCfg("internetconn", setNetworkValue);
+            mm_getXMLCfg("internetconn", setNetworkValue);
             setNetworkText();
             break;
         case "lan":
-            stone_getXMLCfg("lan", setDhcpValue);
+            mm_getXMLCfg("lan", setDhcpValue);
             setLanText();
             break;
         case "clientList":
@@ -273,7 +273,7 @@ function checkHtml(htmlName) {
             // clearInterval(clientIntervalId);
             // clearInterval(networkIntervalId);
             // clearTimeout(resetNetworkStatusTimeoutId);
-            // clientIntervalId = setInterval('setTimeout("stone_getXMLCfg(\'getClientList\', devices_callback)",0)',1000*5);
+            // clientIntervalId = setInterval('setTimeout("mm_getXMLCfg(\'getClientList\', devices_callback)",0)',1000*5);
             let wifitype;
             if (DISPLAY_WIFI_2G == "block" && DISPLAY_WIFI_5G == "block") {
                 wifitype = 2;
@@ -282,7 +282,7 @@ function checkHtml(htmlName) {
             } else {
                 wifitype = 0;
             }
-            stone_getXMLCfg("device_management_all?pageIndex=1&wifi_type=" + wifitype, devices_callback);
+            mm_getXMLCfg("device_management_all?pageIndex=1&wifi_type=" + wifitype, devices_callback);
             setClientsText();
             break;
 
@@ -600,7 +600,6 @@ function setSettingsText() {
     document.getElementById("srTotalMem").innerHTML = I18N("j", "srTotalMem");
 
     document.getElementById("suOnlineUpgrade").innerHTML = I18N("j", "suOnlineUpgrade");
-    document.getElementById("suDfBuildVersion").innerHTML = DEFAULT_BUILD_VERSION;
     document.getElementById("suLatestVersion").innerHTML = I18N("j", "suLatestVersion");
     //document.getElementById("suUpdateTime").innerHTML = I18N("j", "suUpdateTime");
     document.getElementById("suDetectVersion").innerHTML = I18N("j", "suDetectVersion");
@@ -755,7 +754,6 @@ var issim = "";
 function setDashboardValue(content) {
 
     var xml = content;
-    var isWan = 0;
     console.log("objdashboard xml:", xml);
 
     var wanIp = $(xml).find("WANIP").text();
@@ -769,10 +767,6 @@ function setDashboardValue(content) {
 
     var mobileSignal = $(xml).find("strengthLevel").text();
     mobileProvider = $(xml).find("operatorName").text();
-    if (mobileProvider === "Internet") {
-        isWan = 1;
-    }
-
     issim = $(xml).find("issim").text();
     if (0 == issim) {
         mobileProvider = "NO SIM";
@@ -791,13 +785,13 @@ function setDashboardValue(content) {
     wifiStatus5G = "ON";
     wifiSsid5G = $(xml).find("wifi5Ghotname").text();
 
-    //if (wanIp === "") {
-    //    document.getElementById("status_connect").style.display = "none";
-    //    document.getElementById("status_unconnect").style.display = "block";
-    //} else {
+    if (wanIp === "") {
+        document.getElementById("status_connect").style.display = "none";
+        document.getElementById("status_unconnect").style.display = "block";
+    } else {
         document.getElementById("status_connect").style.display = "block";
         document.getElementById("status_unconnect").style.display = "none";
-    //}
+    }
 
     setLabelValue("wan_ip", wanIp);
     // setLabelValue("wan_up_time", wanUpTime);
@@ -831,9 +825,7 @@ function setDashboardValue(content) {
                 break;
         }
 
-        if (isWan == 1) {
-            setLabelValue("mobile_provider", "Internet");
-        } else if (mobileProvider === "NO SIM") {
+        if (mobileProvider === "NO SIM") {
             setLabelValue("mobile_provider", I18N("j", "noSIM"));
         } else if (mobileProvider === "NO Service") {
             setLabelValue("mobile_provider", I18N("j", "noService"));
@@ -1205,7 +1197,7 @@ function changeWifiCfg() {
             alert(I18N("j", "setWifiSuccess"));
         }, 5000);
     } else {
-        alert(I18N("j", "setWifiFailed"));
+        alert(I18N("j", "setFail"));
     }
 }
 
@@ -1444,8 +1436,8 @@ function changeMobileCfg() {
             var state = obj.state;
             console.log("state " + state);
             if (state === 1) {
-                stone_getXMLCfg("internetconn", setNetworkValue);
-                // networkIntervalId = setInterval('setTimeout("stone_getXMLCfg(\'getMobileCfg\', setNetworkValue)",0)', 1000 * 5);
+                mm_getXMLCfg("internetconn", setNetworkValue);
+                // networkIntervalId = setInterval('setTimeout("mm_getXMLCfg(\'getMobileCfg\', setNetworkValue)",0)', 1000 * 5);
                 // resetNetworkStatusTimeoutId = setTimeout("resetNetworkStatus()", 1000 * 21);
                 alert(I18N("j", "setSuccess"));
             } else {
@@ -1482,7 +1474,7 @@ function switchPage(flag) {
         }
     }
 
-    stone_getXMLCfg("device_management_all?pageIndex=" + pageIndex + "&wifi_type=" + wifitype, devices_callback);
+    mm_getXMLCfg("device_management_all?pageIndex=" + pageIndex + "&wifi_type=" + wifitype, devices_callback);
 }
 
 //获取设备列表信息
@@ -1594,9 +1586,9 @@ function loadMainHtml() {
         checkMainHtml(_xmlName);
     }
 
-    // needLoginIntervalId = setInterval('setTimeout("stone_getXMLCfg(\'needLogin\', getNeedLogin)",0)',1000*10);
+    // needLoginIntervalId = setInterval('setTimeout("mm_getXMLCfg(\'needLogin\', getNeedLogin)",0)',1000*10);
     document.getElementById("mBatteryUnit").style.display = DISPLAY_BATTERY;
-    _batteryIntervalID = setInterval('setTimeout("stone_getXMLCfg(\'battery_level\', refreshBattery)",0)', 1000 * 10);
+    _batteryIntervalID = setInterval('setTimeout("mm_getXMLCfg(\'battery_level\', refreshBattery)",0)', 1000 * 10);
     _tempIntervalID = setInterval('setTimeout("gettemp()")', 1000 * 10);
     gettemp();
 }
@@ -1755,8 +1747,8 @@ function showDetailInfo() {
             document.getElementById("detail_band").innerHTML = $(data).find("band").text();
             document.getElementById("detail_earfcn").innerHTML = $(data).find("earfcn").text();
             document.getElementById("detail_rsrp").innerHTML = $(data).find("rsrp").text() + " dBm";
-            document.getElementById("detail_rssi").innerHTML = $(data).find("rssi").text() + " dBm";
-            document.getElementById("detail_rsrq").innerHTML = $(data).find("rsrq").text() + " dB";
+            document.getElementById("detail_rssi").innerHTML = $(data).find("rssi").text() + " dB";;
+            document.getElementById("detail_rsrq").innerHTML = $(data).find("rsrq").text() + " dB";;
             document.getElementById("detail_cellid").innerHTML = $(data).find("cellid").text();
             document.getElementById("detail_pci").innerHTML = $(data).find("pci").text();
             document.getElementById("detail_mcc").innerHTML = $(data).find("mcc").text();

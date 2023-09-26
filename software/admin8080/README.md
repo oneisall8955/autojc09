@@ -4,7 +4,7 @@
 - cd /home/root
 - tar zxf r106.tar.gz
 - echo '/home/root/r106/run.sh > /dev/null 2>&1 &' >> /etc/init.d/hostname.sh
-- rm zxf r106.tar.gz
+- rm r106.tar.gz
 - /home/root/r106/run.sh > /dev/null 2>&1 &
 
 ----------------
